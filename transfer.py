@@ -1,6 +1,7 @@
 import socket
 import numpy as np
 import pickle
+import time
 from io import StringIO
 
 
@@ -36,13 +37,19 @@ class reciever():
         self.address_ = address
         self.port_ = port
         self.socket_ = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    
+        self.connected_ = False
+
     def __del__(self):
         self.socket_.shutdown(1)
         self.socket_.close()
 
     def connect(self):
-        self.socket_.connect((self.address_, self.port_))
+        while not self.connected_:
+            try:
+                self.socket_.connect((self.address_, self.port_))
+            except:
+                time.sleep(5)     
+        self.connected_ = True
         print("Connected")
 
     def recieve(self):
